@@ -1,0 +1,419 @@
+Dilyana Bossenz
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(GGally)
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+getwd()
+list.files()
+pf <- read.csv('wineQualityReds.csv',row.names=NULL)
+pf$X <- NULL
+names(pf)
+
+```
+
+I decided to explorer the data set: Red Wine_Quality, because it is interesting for me to know, what chemical properties speak for a good wine quality. 
+This tidy data set contains 1,599 red wines with 11 variables on the chemical properties of the wine. At least 3 wine experts rated the quality of each wine, providing a rating between 0 (very bad) and 10 (very excellent).
+By analysing of this data set I want to set a focus on a question: Which chemical properties influence the quality of red wines?
+
+# Univariate Plots Section
+
+We have 1599 records and 13 columns in the table.This are the names of columns: "X", "fixed.acidity", "volatile.acidity", "citric.acid","residual.sugar", "chlorides", "free.sulfur.dioxide"  "total.sulfur.dioxide", "density",              "pH", "sulphates", "alcohol", "quality"   
+It is also very important to keep this description in eye:
+1 - fixed acidity: most acids involved with wine or fixed or nonvolatile (do not evaporate readily)
+
+ 2 - volatile acidity: the amount of acetic acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste
+
+3 - citric acid: found in small quantities, citric acid can add 'freshness' and flavor to wines
+
+ 4 - residual sugar: the amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet
+
+5 - chlorides: the amount of salt in the wine
+
+6 - free sulfur dioxide: the free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial growth and the oxidation of wine
+
+   7 - total sulfur dioxide: amount of free and bound forms of S02; in low concentrations, SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+
+8 - density: the density of water is close to that of water depending on the percent alcohol and sugar content
+
+ 9 - pH: describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale
+
+ 10 - sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) levels, wich acts as an antimicrobial and antioxidant
+
+11 - alcohol: the percent alcohol content of the wine
+
+ Output variable (based on sensory data): 
+ 12 - quality (score between 0 and 10)
+
+```{r echo=FALSE, Univariate_Plots}
+dim(pf)
+
+names(pf)
+
+summary(pf)
+
+str(pf)
+```
+
+# Univariate Analysis
+
+
+### What is the structure of your dataset?
+Most of data are numerical. We have no string data in the data set. In every record I can find a quality of wine and also what of chemical properties has this type. It is very relevant information.
+
+### What is/are the main feature(s) of interest in your dataset?
+All chemical properties which stay for good quality of wine. But also I would like to compare it with the bad quality of wine. 
+
+### What other features in the dataset do you think will help support your \
+### investigation into your feature(s) of interest?
+Especially alcohol and sugar are most interesting properties. Is a good wine quality has to have a high level of alcohol?
+
+### Did you create any new variables from existing variables in the dataset?
+Not yet, I need to make my first analysis
+
+### Of the features you investigated, were there any unusual distributions? \
+Did you perform any operations on the data to tidy, adjust, or change the form \
+of the data? If so, why did you do this?
+
+Not yet, as I still don't know what I am going to analyse exactly
+
+# Bivariate Plots Section
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(aes(x = quality, y = alcohol), data = pf)+
+  geom_histogram(stat = "identity")+
+  ggtitle('Does a good quality mean more alcohol in wine?')
+  
+```
+It is impossible to answer this question. As I can see the wine has different categories (1-8). I have to create the categoeries and run the analysis again. But before, I would like to explore the data set deeper.
+
+```{r echo=FALSE, Multivariate_Plots}
+summary(pf$quality)
+```
+
+Acording to the summary we can see that red wine quality is normally distributed and concentrated around 5 and 6.
+
+# Bivariate Analysis
+
+
+
+### What was the strongest relationship you found?
+
+The stongest relationship I could found is quality and alcohol. The corellation of this relation = 0.48
+```{r echo=FALSE, Multivariate_Plots}
+cor.test(x = pf$quality, y = pf$alcohol, method = 'pearson')
+cor.test(x = pf$quality, y = pf$residual.sugar, method = 'pearson')
+cor.test(x = pf$quality, y = pf$pH, method = 'pearson')
+cor.test(x = pf$quality, y = pf$total.sulfur.dioxide, method = 'pearson')
+cor.test(x = pf$quality, y = pf$chlorides, method = 'pearson')
+cor.test(x = pf$quality, y = pf$citric.acid, method = 'pearson')
+cor.test(x = pf$quality, y = pf$sulphates, method = 'pearson')
+cor.test(x = pf$quality, y = pf$density, method = 'pearson')
+cor.test(x = pf$quality, y = pf$free.sulfur.dioxide, method = 'pearson')
+cor.test(x = pf$quality, y = pf$volatile.acidity, method = 'pearson')
+```
+  
+I would like also to see the distribution of citric acid, as in small quantities, citric acid can add 'freshness' and flavor to wines  
+
+```{r echo=FALSE, Multivariate_Plots}
+qplot(x=pf$citric.acid, xlab="Critic acidity (g/dm^3)", binwidth = 0.01)+
+  ggtitle('How was critical acidity dosed?')+
+  scale_x_continuous(breaks = seq(0, 1.1, 0.05))
+
+```
+On this bar chart I see Critic acidity was used very carefully. The lowest value was = 0.09. We have also a pick by 0.24 and 0.47. The correlation between quality an critic acidity is very small (0.22). 
+
+This is our distribution
+```{r echo=FALSE, Multivariate_Plots}
+summary(pf$citric.acid)
+```
+What about the volatile acidity: the amount of acetic acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste
+
+```{r echo=FALSE, Multivariate_Plots}
+qplot(x=pf$volatile.acidity, xlab="volatile.acidity (g/dm^3)", binwidth = 0.01)+
+  ggtitle('How was volatile.acidity dosed?')+
+  scale_x_continuous(breaks = seq(0, 1.1, 0.1))
+
+```
+This is our distribution
+
+```{r echo=FALSE, Multivariate_Plots}
+summary(pf$volatile.acidity)
+```
+We have a  normal distribution. However, I want to know more about this distribution. I will create a new variable called "quality.type" which is categorically divided into "poor", "average", and "excellant". This grouping method will help me detect the difference among each group more easily. Also I want to know the distribution in each quality type. For this I will creat boxplots.
+
+```{r echo=FALSE, Multivariate_Plots}
+pf$quality.type <- ifelse(pf$quality < 5, "poor", 
+                             ifelse(pf$quality < 7, "average", "excellent"))
+pf$quality.type <- factor(pf$quality.type, 
+                             levels=c("excellent", "average", "poor"), ordered=TRUE)
+attach(pf)
+
+
+bi_qplot <- function(x, y, z="jitter") {
+  if(z=="boxplot") {
+    qplot(x=x, y=y, data=pf, geom="jitter", alpha=0.01) + 
+      geom_boxplot() +
+      guides(alpha="none") +
+      theme_bw()
+  }
+  else {
+    qplot(x=x, y=y, data=pf, geom=z, alpha=0.01) + 
+      guides(alpha="none") +
+      theme_bw()
+  }
+}
+
+bi_qplot(quality.type, volatile.acidity, "boxplot") +
+  xlab("Quality") +
+  ylab("Volatile acidity (g/dm^3)")+
+  ggtitle('Volatile acidity oer Quality Type')
+```
+That's obvious, that the red wine with the type "Excellent" have a low level of volatile acidity. Most red wine with the middle quality have about high values. Most red wine with the poor quality have the highest value of volatile acidity. This relationship speeks for the negative correlation. I calculated it above: -0.39
+
+Furthermore, I would like to see all values for the wine with the type "excellent". This will help me to understand what kind of chemical propertiece are neccessary for this type 
+
+
+
+```{r echo=FALSE, Multivariate_Plots}
+exc_pf  <- subset(pf, quality.type =='excellent')
+
+summary(exc_pf)
+
+```
+Here I see the are 217 samples of red wine with the "excellent" type. In order to reach out this quality you need a lot of sulfur.dioxide, fixed.acidity and alcohol, because this values are the highest values.
+
+# Multivariate Plots Section
+
+In this section I would like to make a focus on sugar, alcohol and the quality. Thus I will work with the variable: residual sugar, alcohol and quality type. The amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet. I would like to know, if the wine with the good quality usally sweet or not and how much alcohol it contains.
+
+```{r echo=FALSE, Multivariate_Plots}
+multi_qplot <- function(x, y, z, alpha=0.7) {
+  qplot(x, y, data=pf, alpha = 0.05) +
+    geom_point(position=position_jitter(w = 0.05, h = 0.05), alpha=0.7) +
+    guides(alpha=FALSE)
+}
+multi_qplot(residual.sugar, alcohol, quality.type) +
+  xlab("Sugar (g/dm^3 )") +
+  ylab("Alcohol %") +
+  labs(color="Quality type")+
+  facet_wrap(~ quality.type)+
+  ggtitle("How much alcohol and sugar contains different wine types?")
+
+```
+I see that usually a wine with the excellant quality is not sweet and doesn't contain much alsohol. The wine with the quality type "average" contain much much alcohol and a bit more suger. The wine with the quality type "poor" sontains less sugar and more alcohol. I would like to know in detail about this chart.
+
+```{r echo=FALSE, Multivariate_Plots}
+print("Alcohol by quality type:")
+```
+
+```{r echo=FALSE, Multivariate_Plots}
+pf %>% 
+  group_by(quality.type) %>% 
+  summarize(mean=mean(alcohol))
+``` 
+
+```{r echo=FALSE, Multivariate_Plots}
+print("Sugar by type:")
+```
+
+```{r echo=FALSE, Multivariate_Plots}
+pf %>% 
+  group_by(quality.type) %>% 
+  summarize(mean=mean(residual.sugar))
+``` 
+
+It is interesting to see this numbers, becauuse the visual presentation is difficult to asstimate exactly. Now we have a different picture: The type "excellent" contains the most sugar and alcohol in average. The type "poor" contains the least alcohol, but more suger than type "average". The type "average" contains the least suger in average. The % of alcoholis in the middle range: more than "poor" and less than "excellent".
+
+Also I am interested in salt in the wine. The variable: chlorides schows the amount of salt in the wine
+
+```{r echo=FALSE, Multivariate_Plots}
+multi_qplot <- function(x, y, z, alpha=0.7) {
+  qplot(x, y, data=pf, color = z) +
+    geom_point(position=position_jitter(w = 0.1, h = 0.1), alpha=0.01) +
+    guides(alpha=FALSE)
+}
+multi_qplot(residual.sugar, chlorides, quality.type) +
+  xlab("Sugar (g/dm^3 )") +
+  ylab("Salt (g/dm^3 )") +
+  labs(color="Quality type")+
+  ggtitle("How much salt and sugar contains different wine types?")
+
+```
+This plot shows me, the wine with the quality 'average' has as many sugar as many salt. 
+The wine with the quality 'excellent' has more sugar than salt. And the red wine with the 'poor' quality has lower values of sugar and salt compared to the red wine with the 'average' quality.
+
+```{r echo=FALSE, Multivariate_Plots}
+print("Salt by type:")
+```
+
+```{r echo=FALSE, Multivariate_Plots}
+pf %>% 
+  group_by(quality.type) %>% 
+  summarize(mean=mean(chlorides)) 
+```  
+All types contain much less salt than sugar. There is least salt in the "excellent" type and most salt in the "poor" type. 
+
+```{r echo=FALSE, Multivariate_Plots}
+cor.test(x = pf$residual.sugar, y = pf$chloride, method = 'pearson')
+```
+The correlation between slat and sugar is very weak: 0.055
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. Were there features that strengthened each other in terms of \
+looking at your feature(s) of interest?
+
+I observed a negative relationships between quality and salt (chlorides)| quality and volatily acid, and positive correlation between quality and alcohol | quality and citric acid. The correlation between quality and alcohol is 0.47. It is moderate correlation and is the strongest correlation in compare to all other correlation values, I compared.I also noticed that red wine with the excellent quality has the highest proportion of alcohol (in average) and sugar and the lowest proportion of salt (in average).
+
+The last comparison I would like to see is, the relationship between pH and quality type of wine. pH describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale. I want to proove if I can see this in the data.
+
+```{r echo=FALSE, Multivariate_Plots}
+den_qplot <- function(x, color, xlab) {
+  ggplot(data=pf, aes(x, colour=color)) + 
+    geom_density() + 
+    xlab(xlab) + 
+    labs(colour="Quality type") +
+    theme_bw()
+}
+den_qplot(pH, quality.type, "pH")+
+  ggtitle("pH values per Quality Type")
+```
+```{r echo=FALSE, Plot_One}
+summary(pf$pH)
+```
+It is true. All wine qualities are between 3-4 on the pH scale. 
+
+### Were there any interesting or surprising interactions between features?
+I created a corelation between quality and all other chemical properties. I observed that all chemical properties show very weak relationship or do not show any relationship. 
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the \
+strengths and limitations of your model.
+
+------
+
+# Final Plots and Summary
+
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+pf$quality.type <- ifelse(pf$quality < 5, "poor", 
+                             ifelse(pf$quality < 7, "average", "excellent"))
+pf$quality.type <- factor(pf$quality.type, 
+                             levels=c("excellent", "average", "poor"), ordered=TRUE)
+attach(pf)
+
+
+bi_qplot <- function(x, y, z="jitter") {
+  if(z=="boxplot") {
+    qplot(x=x, y=y, data=pf, geom="jitter", alpha=0.01) + 
+      geom_boxplot() +
+      guides(alpha="none") +
+      theme_bw()
+  }
+  else {
+    qplot(x=x, y=y, data=pf, geom=z, alpha=0.01) + 
+      guides(alpha="none") +
+      theme_bw()
+  }
+}
+
+bi_qplot(quality.type, volatile.acidity, "boxplot") +
+  xlab("Quality") +
+  ylab("Volatile acidity (g/dm^3)")+
+  ggtitle('Volatile acidity oer Quality Type')
+```
+
+### Description One
+I think it is very powerful visualisation, as I can immediatly recognice the distribution. I see that most of red wines in the data set have "average" quality. The red wine with the "escellent" quality have the the lowest proportion of volatile acidity. It is was I excpected, as  a high level of volatile acidity can lead to an unpleasant, vinegar taste. I see also the wine with the "poor" quality have the highest level of volatile acidity. This could be the reason why this wine was classified as a "poor". 
+
+The boxplots are very effective, as I can see the median of all three types of quality and I can compare them very easy.
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+multi_qplot <- function(x, y, z, alpha=0.7) {
+  qplot(x, y, data=pf, alpha = 0.05) +
+    geom_point(position=position_jitter(w = 0.05, h = 0.05), alpha=0.7) +
+    guides(alpha=FALSE)
+}
+multi_qplot(residual.sugar, alcohol, quality.type) +
+  xlab("Sugar (g/dm^3 )") +
+  ylab("Alcohol %") +
+  labs(color="Quality type")+
+  facet_wrap(~ quality.type)+
+  ggtitle("How much alcohol and sugar contains different wine types?")
+```
+
+### Description Two
+This visualisation is also very interesting. Here you see the scatterplot, which shows us a correlation between sugar and alcohol per quality type. When I first saw this chart, I thought, the wine with the "average" quality includes most alcohol and sugar. However, I was wronng. When I calculated the averages, I recognised: the wine with the quality "excellent" has the highest value of alcohol and sugar.
+
+
+```{r echo=FALSE, Multivariate_Plots}
+print("Alcohol by quality type:")
+```
+
+```{r echo=FALSE, Multivariate_Plots}
+pf %>% 
+  group_by(quality.type) %>% 
+  summarize(mean=mean(alcohol))
+``` 
+
+
+```{r echo=FALSE, Multivariate_Plots}
+print("Sugar by type:")
+```
+
+```{r echo=FALSE, Multivariate_Plots}
+pf %>% 
+  group_by(quality.type) %>% 
+  summarize(mean=mean(residual.sugar))
+``` 
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+den_qplot <- function(x, color, xlab) {
+  ggplot(data=pf, aes(x, colour=color)) + 
+    geom_density() + 
+    xlab(xlab) + 
+    labs(colour="Quality type") +
+    theme_bw()
+}
+den_qplot(pH, quality.type, "pH")+
+  ggtitle("pH values per Quality Type")
+```
+
+### Description Three
+High pH values describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale. You can see that all out types have pH values in this section. HOwever, you can also recognise, that the wine quality "excellent" have the lowest pHv value and the wine qulity "poor" have the highest pH value. 
+
+
+------
+
+# Reflection
+
+The wines data set contains information on 1599 wines across twelve variables from around 2009. I started by understanding the individual variables in the data set, and then I explored interesting questions. I wanted to know: 
+- What characteristics (chemical properties) make "excellent" wine?
+- Does an excellent red wine consist more alcohol or sugar?
+- Does an excellent red wine consist more salt?
+- What about the freshness in the test: How was critical acidity dosed?
+- Which characteristics make wine unpleasant, vinegar taste: How was volatile.acidity dosed?
+- And last but not least: How much pH values does  an excellent value contains? 
+
+All this questions I could answered with my analysis. I found out, that an "excellante" taste of red wine we can really reach with more alcohol, sugar and citric acid and less volatily acid and pH. 
+
+In addition, I compare the correlation between quality and all other chemical characteristis. I found out, we hova mostly very weak or no correlation. 
+
+There are very few wines that are rated as low or high quality. We could improve the quality of our analysis by collecting more data, and creating more variables that may contribute to the quality of wine. This will certainly improve the accuracy of the prediction models. Having said that, we have successfully identified features that impact the quality of red wine, visualized their relationships and summarized their statistics.
+
+
