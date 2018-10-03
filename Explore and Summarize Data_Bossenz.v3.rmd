@@ -91,19 +91,8 @@ Yes, I did. I did create quaity types: excellent, average, poor. This give me an
 Did you perform any operations on the data to tidy, adjust, or change the form \
 of the data? If so, why did you do this?
 
-In order to answer this quastion I am going to build the scatterplot matrics, which give me a possability to compare all properties in one step.
 
-```{r echo=FALSE, Univariate_Plots}
-library(GGally)
-
-theme_set(theme_minimal(20))
-
-#set the seed for reproducable results
-set.seed(1500)
-ggpairs(pf[sample.int(nrow(pf), 1000), ])
-```
-
-I tried to explore unusual distributions with scatterplot matrics. Unfortenately I cannot recognise anything. Thus I will try to analyse every element separatly. By this analysis I will also look at the person correlation. I am interested in the elements which have a high correlation with the quality.
+Now I will try to analyse every element separatly. By this analysis I will also look at the person correlation. I am interested in the elements which have a high correlation with the quality.
 
 ```{r echo=FALSE}
 qplot(x=pf$citric.acid, xlab="citric acid", binwidth = 0.05)+
@@ -119,7 +108,9 @@ We have a weak correlation between quality and citric.acid. The distribution is 
 ```{r echo=FALSE}
 qplot(x=pf$volatile.acidity, xlab="Volatile acidity", binwidth = 0.05)+
 ggtitle('How was volatile acidity dosed?')+
-scale_x_continuous(breaks = seq(0, 1, 0.1))
+  
+  
+scale_x_continuous(breaks = seq(0, 2, 0.2))
 ```
 ```{r echo=FALSE}
 cor.test(x = pf$quality, y = pf$volatile.acidity, method = 'pearson')
@@ -130,7 +121,9 @@ We have a negative weak correlation between quality and volatile.acidity. The di
 ```{r echo=FALSE}
 qplot(x=pf$volatile.acidity, xlab="alcohol", binwidth = 0.05)+
 ggtitle('How was alcohol dosed?')+
-scale_x_continuous(breaks = seq(0, 1, 0.1))
+  
+  
+scale_x_continuous(breaks = seq(0, 2, 0.2))
 ```
 
 ```{r echo=FALSE}
@@ -139,9 +132,12 @@ cor.test(x = pf$quality, y = pf$alcohol, method = 'pearson')
 We have the moderate correlation and the distribution is normal.
 
 ```{r echo=FALSE}
-qplot(x=pf$residual.sugar, xlab="residual.sugar", binwidth = 0.5)+
+qplot(x=pf$residual.sugar, xlab="residual.sugar", binwidth = 1)+
 ggtitle('How was residual.sugar dosed?')+
-scale_x_continuous(breaks = seq(0, 1, 0.5))
+  
+  
+  
+scale_x_continuous(breaks = seq(0, 15, 1))
 ```
 ```{r echo=FALSE}
 cor.test(x = pf$quality, y = pf$residual.sugar, method = 'pearson')
@@ -151,6 +147,8 @@ The correlation is very week. The distribution is left skewed. The distribution 
 ```{r echo=FALSE}
 qplot(x=pf$pH, xlab="pH", binwidth = 0.05)+
 ggtitle('How was pH dosed?')+
+  
+  
 scale_x_continuous(breaks = seq(0, 1, 0.1))
 ```
 
@@ -160,9 +158,12 @@ cor.test(x = pf$quality, y = pf$pH, method = 'pearson')
 The correlation is about null. The distribution is normal.
 
 ```{r echo=FALSE}
-qplot(x=pf$total.sulfur.dioxide, xlab="total.sulfur.dioxide", binwidth = 1)+
+qplot(x=pf$total.sulfur.dioxide, xlab="total.sulfur.dioxide", binwidth = 5)+
 ggtitle('How was total.sulfur.dioxide dosed?')+
-scale_x_continuous(breaks = seq(0, 1, 1))
+  
+  
+  
+scale_x_continuous(breaks = seq(0, 300, 50))
 ```
 
 ```{r echo=FALSE}
@@ -173,7 +174,9 @@ The correlation is about null. The distribution is left skewed.
 ```{r echo=FALSE}
 qplot(x=pf$sulphates, xlab="sulphates", binwidth = 0.05)+
 ggtitle('How was sulphates dosed?')+
-scale_x_continuous(breaks = seq(0, 1, 0.1))
+  
+  
+scale_x_continuous(breaks = seq(0, 2, 0.1))
 ```
 
 ```{r echo=FALSE}
@@ -184,6 +187,8 @@ The correlation is weak. The distribution is left skewed with a long right tail.
 ```{r echo=FALSE}
 qplot(x=pf$density, xlab="density", binwidth = 0.05)+
 ggtitle('How was density dosed?')+
+  
+  
 scale_x_continuous(breaks = seq(0, 1, 0.1))
 ```
 
@@ -193,9 +198,11 @@ cor.test(x = pf$quality, y = pf$density, method = 'pearson')
 The correlation is about null. The distribution is not recognisable.
 
 ```{r echo=FALSE}
-qplot(x=pf$free.sulfur.dioxide, xlab="free.sulfur.dioxide", binwidth = 1)+
+qplot(x=pf$free.sulfur.dioxide, xlab="free.sulfur.dioxide", binwidth = 2)+
 ggtitle('How was free.sulfur.dioxide dosed?')+
-scale_x_continuous(breaks = seq(0, 1, 1))
+  
+  
+scale_x_continuous(breaks = seq(0, 80, 5))
 ```
 
 ```{r echo=FALSE}
@@ -205,6 +212,20 @@ The correlation is about null. The distribution is left skewed.
 
 
 # Bivariate Plots Section
+
+I am also curious if I can recognise more interesting data correlation by building the scatterplot matrics.
+
+```{r echo=FALSE, Univariate_Plots}
+library(GGally)
+
+theme_set(theme_minimal(20))
+
+#set the seed for reproducable results
+set.seed(1500)
+ggpairs(pf[sample.int(nrow(pf), 1000), ])
+```
+
+The scatterplot matrics gives me a big picture. How ever, I want to now more details. Thus I will do futher statistic analysis.
 
 ```{r echo=FALSE}
 summary(pf$quality)
@@ -222,6 +243,8 @@ ggplot(data = pf, aes(x = factor(quality), y = alcohol))+
   stat_summary(fun.y = 'mean', geom = 'point', color = "red")+
   labs(x = "Quality (score between 3 and 9)", y = 'Alcohol (% by volume)', title = "Boxplot of alcohol across qualities")
 ```
+
+
 On this boxplot chart you can see the distribution of alcohol (% by the volume) per quality. For example: By the red wine with quality with 5 score you can recognise the smallest box, i.e. the minimun and maximum values are not far from each other and the 50% of wines with this score are in this box.The average of alcohol (% by the volume) for this quality of wine is above 50% (Look at the red dot in the box).
 
 ### What was the strongest relationship you found?
